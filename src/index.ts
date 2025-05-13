@@ -92,28 +92,23 @@ app.post("/api/v1/signin", async function (req, res) {
   }
 });
 
-app.get(
-  "api/v1/content ",
-  usermiddleware,
-  async function (req: Request, res: Response) {
-    const userId = req.userId;
-    const link = req.body.link;
-    const type = req.body.type;
-    await contentModel.create({
-      link,
-      type,
-      userId,
-      tags: [],
-    });
+app.post("/api/v1/content", usermiddleware, async (req, res) => {
+  const link = req.body.link;
+  const type = req.body.type;
+  await contentModel.create({
+    link,
+    type,
+    title: req.body.title,
+    userId: req.userId,
+    tags: [],
+  });
 
-    res.json({
-      message: "content added",
-    });
-  }
-);
+  res.json({
+    message: "Content added",
+  });
+});
 
 app.get("/api/v1/content", usermiddleware, async (req, res) => {
-  // @ts-ignore
   const userId = req.userId;
   const content = await contentModel
     .find({
@@ -197,3 +192,5 @@ app.get("/api/v1/brain/:shareLink", usermiddleware, async function (req, res) {
     content: content,
   });
 });
+
+app.listen(3000);

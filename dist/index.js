@@ -30,14 +30,16 @@ app.post("/api/v1/signup", function (req, res) {
         });
         const result = signUpSchema.safeParse(req.body);
         if (!result.success) {
-            return res.status(400).json({
+            res.status(400).json({
                 message: "Invalid Credentials",
             });
+            return;
         }
         const { username, password } = result.data;
-        const hashedPassword = bcrypt_1.default.hash(password, 5);
+        const hashedPassword = yield bcrypt_1.default.hash(password, 5); // Added await here
         try {
-            const user = db_1.userModel.create({
+            yield db_1.userModel.create({
+                // Added await here
                 username,
                 password: hashedPassword,
             });
@@ -46,69 +48,71 @@ app.post("/api/v1/signup", function (req, res) {
             });
         }
         catch (error) {
-            res.json({
+            res.status(500).json({
+                // Added proper status code
                 message: "signup failed",
             });
         }
     });
 });
 app.post("/api/v1/signin", function (req, res) {
-    const signInSchema = zod_1.default.object({
-        username: zod_1.default.string(),
-        password: zod_1.default.string(),
-    });
-    const result = signInSchema.safeParse(req.body);
-    if (!result.success) {
-        return res.status(400).json({
-            message: "Invalid Credentials",
+    return __awaiter(this, void 0, void 0, function* () {
+        const signInSchema = zod_1.default.object({
+            username: zod_1.default.string(),
+            password: zod_1.default.string(),
         });
-    }
-    const { username, password } = result.data;
-    try {
-        const user = db_1.userModel.findOne({
-            username,
-        });
-        if (!user || !user.password) {
-            return res.status(401).json({ message: "Invalid credentials" });
+        const result = signInSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({
+                message: "Invalid Credentials",
+            });
+            return;
         }
-        const compare = bcrypt_1.default.compare(password, user.password);
-        if (!compare) {
-            res.status(404).json({
-                message: "invalid credentials",
+        const { username, password } = result.data;
+        try {
+            const user = yield db_1.userModel.findOne({
+                username,
+            });
+            if (!user || !user.password) {
+                res.status(401).json({ message: "Invalid credentials" });
+                return;
+            }
+            const compare = bcrypt_1.default.compare(password, user.password);
+            if (!compare) {
+                res.status(404).json({
+                    message: "invalid credentials",
+                });
+            }
+            const token = jsonwebtoken_1.default.sign({
+                id: user._id,
+            }, config_1.JWT_PASSWORD);
+            res.status(200).json({
+                token,
+                message: "signin successfull",
             });
         }
-        const token = jsonwebtoken_1.default.sign({
-            id: user._id,
-        }, config_1.JWT_PASSWORD);
-        res.status(200).json({
-            token,
-            message: "signin successfull",
-        });
-    }
-    catch (error) {
-        res.status(501).json({
-            message: "signnn failed",
-        });
-    }
-});
-app.get("api/v1/content ", middleware_1.usermiddleware, function (req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const userId = req.userId;
-        const link = req.body.link;
-        const type = req.body.type;
-        yield db_1.contentModel.create({
-            link,
-            type,
-            userId,
-            tags: [],
-        });
-        res.json({
-            message: "content added",
-        });
+        catch (error) {
+            res.status(501).json({
+                message: "signnn failed",
+            });
+        }
     });
 });
+app.post("/api/v1/content", middleware_1.usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const link = req.body.link;
+    const type = req.body.type;
+    yield db_1.contentModel.create({
+        link,
+        type,
+        title: req.body.title,
+        userId: req.userId,
+        tags: [],
+    });
+    res.json({
+        message: "Content added",
+    });
+}));
 app.get("/api/v1/content", middleware_1.usermiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // @ts-ignore
     const userId = req.userId;
     const content = yield db_1.contentModel
         .find({
@@ -175,5 +179,16 @@ app.get("/api/v1/brain/:shareLink", middleware_1.usermiddleware, function (req, 
         const user = yield db_1.userModel.create({
             _id: link.userId,
         });
+        if (!user) {
+            res.status(411).json({
+                message: "user not found, error should ideally not happen",
+            });
+            return;
+        }
+        res.json({
+            username: user.username,
+            content: content,
+        });
     });
 });
+app.listen(3000);
