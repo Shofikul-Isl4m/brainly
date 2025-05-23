@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CrossIcon } from "../icons/CrossIcon";
 import { Button } from "./Button";
+import { Input } from "./Input";
 
 export function CreateContentModal({ open, onClose }) {
   return (
@@ -10,7 +11,7 @@ export function CreateContentModal({ open, onClose }) {
           <div className="flex flex-col justify-center">
             <span className="bg-white opacity-100 p-4 rounded">
               <div className="flex justify-end ">
-                <div onClick={onClose}>
+                <div onClick={onClose} className="cursor-pointer">
                   <CrossIcon />
                 </div>
               </div>
@@ -25,19 +26,6 @@ export function CreateContentModal({ open, onClose }) {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function Input({ onchange, placeholder }: { onChange: () => void }) {
-  return (
-    <div>
-      <input
-        type={"text"}
-        placeholder={placeholder}
-        className="px-4 py-2 m-2 border rounded m-2"
-        onChange={onchange}
-      ></input>
     </div>
   );
 }
