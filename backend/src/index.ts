@@ -7,9 +7,11 @@ import { contentModel, linkModel, userModel } from "./db";
 import { usermiddleware } from "./middleware";
 import { random } from "./utils";
 import { JWT_PASSWORD } from "./config";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.post("/api/v1/signup", async function (req: Request, res: Response) {
   const signUpSchema = z.object({
@@ -153,10 +155,14 @@ app.post("/api/v1/brain/share", usermiddleware, async function (req, res) {
     res.json({
       hash,
     });
-  } else
+  } else {
     await linkModel.deleteOne({
       userId: req.userId,
     });
+    res.json({
+      message: "Share link deleted successfully",
+    });
+  }
 });
 
 app.get("/api/v1/brain/:shareLink", usermiddleware, async function (req, res) {
@@ -176,7 +182,7 @@ app.get("/api/v1/brain/:shareLink", usermiddleware, async function (req, res) {
     userId: link.userId,
   });
 
-  const user = await userModel.create({
+  const user = await userModel.findOne({
     _id: link.userId,
   });
 

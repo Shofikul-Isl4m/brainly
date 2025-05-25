@@ -1,5 +1,5 @@
 export function random(len: number) {
-  let options = "qwertyuiopasdfghjklzxcvbnm123456789!@#$%^&*()_+=-";
+  let options = "qwertyuiopasdfghjklzxcvbnmm,../';][=+-09*1230456789+-";
   let length = options.length;
 
   let ans = "";
