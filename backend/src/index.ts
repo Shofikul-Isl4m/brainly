@@ -3,15 +3,21 @@ import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import z from "zod";
 import bcrypt from "bcrypt";
-import { contentModel, linkModel, userModel } from "./db";
+
 import { usermiddleware } from "./middleware";
 import { random } from "./utils";
 import { JWT_PASSWORD } from "./config";
 import cors from "cors";
+import { contentModel } from "./model/ContentModel";
+import { shareModel } from "./model/ShareModel";
+import { userModel } from "./model/UserModel";
+import connectDB from "./database/db";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+connectDB();
 
 app.post("/api/v1/signup", async function (req: Request, res: Response) {
   const signUpSchema = z.object({
@@ -138,7 +144,7 @@ app.delete("/api/v1/content", usermiddleware, async (req, res) => {
 app.post("/api/v1/brain/share", usermiddleware, async function (req, res) {
   const share = req.body.share;
   if (share) {
-    const existingUser = await linkModel.findOne({
+    const existingUser = await shareModel.findOne({
       userId: req.userId,
     });
     if (existingUser) {
@@ -148,7 +154,7 @@ app.post("/api/v1/brain/share", usermiddleware, async function (req, res) {
       return;
     }
     const hash = random(10);
-    await linkModel.create({
+    await shareModel.create({
       userId: req.userId,
       hash,
     });
@@ -156,7 +162,7 @@ app.post("/api/v1/brain/share", usermiddleware, async function (req, res) {
       hash,
     });
   } else {
-    await linkModel.deleteOne({
+    await shareModel.deleteOne({
       userId: req.userId,
     });
     res.json({
@@ -167,7 +173,7 @@ app.post("/api/v1/brain/share", usermiddleware, async function (req, res) {
 
 app.get("/api/v1/brain/:shareLink", usermiddleware, async function (req, res) {
   const hash = req.params.shareLink;
-  const link = await linkModel.findOne({
+  const link = await shareModel.findOne({
     hash,
   });
 
