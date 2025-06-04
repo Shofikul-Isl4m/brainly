@@ -1,10 +1,12 @@
+require("dotenv").config();
+
 import express from "express";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import z from "zod";
 import bcrypt from "bcrypt";
 
-import { usermiddleware } from "./middleware";
+import { usermiddleware } from "./jwt/middleware";
 import { random } from "./utils";
 import { JWT_PASSWORD } from "./config";
 import cors from "cors";
@@ -12,12 +14,17 @@ import { contentModel } from "./model/ContentModel";
 import { shareModel } from "./model/ShareModel";
 import { userModel } from "./model/UserModel";
 import connectDB from "./database/db";
+import userRouter from "./routes/user.router";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 connectDB();
+
+app.use("/", userRouter);
+app.use("/content", contentRoutes);
+app.use("/", shareRoutes);
 
 app.post("/api/v1/signup", async function (req: Request, res: Response) {
   const signUpSchema = z.object({

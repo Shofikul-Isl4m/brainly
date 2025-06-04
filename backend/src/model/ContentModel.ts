@@ -19,4 +19,4 @@ const ContentSchema = new Schema(
   { timestamps: true }
 );
 
-export const contentModel = model("content", ContentSchema);
+export const Content = model("content", ContentSchema);

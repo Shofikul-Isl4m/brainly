@@ -1,6 +1,5 @@
-import { NextFunction, Request, RequestHandler, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { JWT_PASSWORD } from "./config";
 
 export const usermiddleware = function (
   req: Request,
@@ -17,7 +16,7 @@ export const usermiddleware = function (
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_PASSWORD);
+    const decoded = jwt.verify(token, process.env.JWT_PASSWORD as string);
     if (decoded) {
       if (typeof decoded === "string") {
         res.status(403).json({
