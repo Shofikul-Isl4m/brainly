@@ -1,5 +1,6 @@
 import express from "express";
-import { jwtAuth } from "../jwt/jwtAuth";
+
+import { usermiddleware } from "../jwt/middleware";
 import {
   ContentDelete,
   ContentDeleteId,
@@ -7,15 +8,15 @@ import {
   ContentGetId,
   contentPost,
   ContentPutId,
-} from "../controller/content.controller";
+} from "../controller/contetnt.controller";
 
 const router = express.Router();
 
-router.get("", jwtAuth, contentGet);
-router.post("", jwtAuth, contentPost);
-router.delete("", jwtAuth, ContentDelete);
-router.get("/:id", jwtAuth, ContentGetId);
-router.put("/:id", jwtAuth, ContentPutId);
-router.delete("/:id", jwtAuth, ContentDeleteId);
+router.get("", usermiddleware, contentGet);
+router.post("", usermiddleware, contentPost);
+router.delete("", usermiddleware, ContentDelete);
+router.get("/:id", usermiddleware, ContentGetId);
+router.put("/:id", usermiddleware, ContentPutId);
+router.delete("/:id", usermiddleware, ContentDeleteId);
 
 export default router;

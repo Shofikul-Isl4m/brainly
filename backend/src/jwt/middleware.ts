@@ -7,7 +7,8 @@ export const usermiddleware = function (
   next: NextFunction
 ) {
   const header = req.headers["authorization"];
-  const token = header?.replace("bearer ", "");
+  const token = header;
+
   if (!token) {
     res.status(401).json({
       message: " no token provided",

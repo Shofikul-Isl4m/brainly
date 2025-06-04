@@ -1,11 +1,12 @@
 import express, { Router } from "express";
+
+import { usermiddleware } from "../jwt/middleware";
 import {
   changePassword,
   userProfile,
   userSignin,
   userSignup,
 } from "../controller/user.controller";
-import { usermiddleware } from "../jwt/middleware";
 
 const router = Router();
 

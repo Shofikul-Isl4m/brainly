@@ -21,4 +21,4 @@ const shareSchema = new Schema(
   { timestamps: true }
 );
 
-export const shareModel = model("share", shareSchema);
+export const Share = model("share", shareSchema);

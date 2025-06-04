@@ -6,7 +6,8 @@ export const contentPost = async (req: Request, res: Response) => {
     const { title, link, tags } = req.body;
 
     if (!title || !link) {
-      return res.status(400).send("Please fill in all required fields.");
+      res.status(400).send("Please fill in all required fields.");
+      return;
     }
 
     await Content.create({
@@ -25,7 +26,8 @@ export const contentPost = async (req: Request, res: Response) => {
 export const contentGet = async (req: Request, res: Response) => {
   try {
     if (!req.userId) {
-      return res.status(401).json({ message: "Unauthorized: User ID missing" });
+      res.status(401).json({ message: "Unauthorized: User ID missing" });
+      return;
     }
 
     const contents = await Content.find({ createdBy: req.userId });
