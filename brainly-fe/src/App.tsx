@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Credentials from "./pages/Credentials";
 
 function App() {
   return (
