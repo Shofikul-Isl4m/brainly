@@ -5,11 +5,11 @@ interface inputs {
   tags: string[];
 }
 export const inputValueState = atom({
-  key: "inputValue",
+  key: "inputValue1",
   default: <inputs>{ title: "", link: "", tags: [] },
 });
 
 export const tagsState = atom({
-  key: "tags",
+  key: "tags!",
   default: <string[]>[],
 });
