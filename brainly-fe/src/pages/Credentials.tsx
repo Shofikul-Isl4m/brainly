@@ -1,20 +1,25 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../components/ui/card";
+
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "../components/ui/form";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
@@ -24,6 +29,7 @@ import axios from "axios";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import type { AxiosResponse } from "axios";
+import { Input } from "../components/ui/input";
 
 const signupSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -131,8 +137,8 @@ const Credentials = () => {
 
         <TabsContent value="Signup">
           <Card className=" h-[450px]">
-            <CardHeader>
-              <CardTitle className="text-3xl">Sign Up</CardTitle>
+            <CardHeader className="flex flex-col items-center">
+              <CardTitle className="text-3xl  ">Sign Up</CardTitle>
               <CardDescription>
                 Save, organize, and access your links anywhere, anytime.
               </CardDescription>
@@ -187,7 +193,7 @@ const Credentials = () => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className=" cursor-pointer">
+                  <Button type="submit" className=" cursor-pointer w-full">
                     Submit
                   </Button>
                 </form>
@@ -198,7 +204,7 @@ const Credentials = () => {
 
         <TabsContent value="Signin">
           <Card className=" h-[450px]">
-            <CardHeader>
+            <CardHeader className="flex flex-col items-center">
               <CardTitle className="text-3xl">Sign In</CardTitle>
               <CardDescription>
                 Welcome back — access your saved links instantly.
@@ -210,39 +216,41 @@ const Credentials = () => {
                   onSubmit={Signinform.handleSubmit(onSubmitSignin)}
                   className="space-y-8"
                 >
-                  <FormField
-                    control={Signinform.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder="username"
-                            type="text"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={Signinform.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder="Password"
-                            type="password"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className=" cursor-pointer">
+                  <div className="space-y-4">
+                    <FormField
+                      control={Signinform.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="username"
+                              type="text"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={Signinform.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Password"
+                              type="password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <Button type="submit" className=" cursor-pointer w-full">
                     Submit
                   </Button>
                 </form>
