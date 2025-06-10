@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 import {
   Form,
@@ -23,7 +24,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
-const API_BASE = import.meta.env.VITE_API_BASE;
+
 import axios from "axios";
 
 import { z } from "zod";
