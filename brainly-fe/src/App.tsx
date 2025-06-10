@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Credentials from "./pages/Credentials";
-import Navbar from "./components/Navbar";
+import MainLayout from "./components/MainLayout";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/user" element={<Navbar />}></Route>
+        <Route path="/user" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+        </Route>
         <Route path="/" element={<Credentials />} />
         <Route path="/signup" element={<Credentials />} />
       </Routes>

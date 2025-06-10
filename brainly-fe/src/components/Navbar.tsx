@@ -1,3 +1,6 @@
+import React from "react";
+console.log("React Version:", React.version);
+
 import Sidebar from "./Sidebar";
 import { Button } from "./ui/button";
 import {
@@ -11,12 +14,13 @@ import {
 import { MdOutlineContentCopy } from "react-icons/md";
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
-import { inputValueState, tagsState } from "@/store/atoms";
-import { useRecoilState } from "recoil";
+
 import axios from "axios";
 import { FaCheck } from "react-icons/fa6";
 import { Switch } from "./ui/switch";
 import { Badge } from "./ui/badge";
+import { inputValueState, tagsState } from "@/store/atoms";
+import { useRecoilState } from "recoil";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 const Navbar = () => {
@@ -31,7 +35,7 @@ const Navbar = () => {
   useEffect(() => {
     axios
       .get(`${API_BASE}/shareon`, {
-        headers: { token: JSON.parse(token as string) },
+        headers: { token },
       })
       .then((res) => {
         setSharable(res.data.isSharing);
@@ -50,11 +54,7 @@ const Navbar = () => {
       setTagValue("");
     }
     axios
-      .post(
-        `${API_BASE}/content`,
-        { ...inputValue },
-        { headers: { token: JSON.parse(token) } }
-      )
+      .post(`${API_BASE}/content`, { ...inputValue }, { headers: { token } })
       .then()
       .catch((res) => console.log(res));
     setInputValue({ title: "", link: "", tags: [] });
@@ -87,11 +87,7 @@ const Navbar = () => {
   const checkedChangedHandler = () => {
     if (!sharable) {
       axios
-        .post(
-          `${API_BASE}/shareon`,
-          {},
-          { headers: { token: JSON.parse(token) } }
-        )
+        .post(`${API_BASE}/shareon`, {}, { headers: { token } })
         .then((res) => {
           setSharedLink(`${window.location.origin}/share/` + res.data.slug);
           setSharable(res.data.isSharing);
@@ -99,11 +95,7 @@ const Navbar = () => {
         .catch((res) => console.log(res));
     } else {
       axios
-        .post(
-          `${API_BASE}/shareoff`,
-          {},
-          { headers: { token: JSON.parse(token) } }
-        )
+        .post(`${API_BASE}/shareoff`, {}, { headers: { token } })
         .then((res) => {
           setSharedLink("");
           setSharable(res.data.isSharing);
@@ -117,7 +109,7 @@ const Navbar = () => {
       <Sidebar />
       <div className="mr-10 flex items-center">
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button className="mx-1 rounded-sm cursor-pointer">Share</Button>
           </DialogTrigger>
           <DialogContent className="p-2 sm:p-6">
@@ -151,7 +143,7 @@ const Navbar = () => {
           </DialogContent>
         </Dialog>
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button className="mx-1 rounded-sm mr-5 cursor-pointer">
               Add Content
             </Button>
@@ -202,11 +194,11 @@ const Navbar = () => {
                   }}
                 />
                 <Button
-                  className="mt-2 cursor-pointer rounded-sm"
+                  className="mt-2 cursor-pointer rounded-sm w-full"
                   onClick={submithandler}
                   disabled={!inputValue.title || !inputValue.link}
                 >
-                  Add Link
+                  Add Content
                 </Button>
               </DialogDescription>
             </DialogHeader>

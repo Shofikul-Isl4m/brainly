@@ -1,15 +1,17 @@
 import { atom } from "recoil";
-interface inputs {
+
+interface Inputs {
   title: string;
   link: string;
   tags: string[];
 }
-export const inputValueState = atom({
+
+export const inputValueState = atom<Inputs>({
   key: "inputValue1",
-  default: <inputs>{ title: "", link: "", tags: [] },
+  default: { title: "", link: "", tags: [] },
 });
 
-export const tagsState = atom({
-  key: "tags!",
-  default: <string[]>[],
+export const tagsState = atom<string[]>({
+  key: "tagsState",
+  default: [],
 });
