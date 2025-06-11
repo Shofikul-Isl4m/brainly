@@ -38,7 +38,9 @@ interface dataInterface {
   createdAt: string;
 }
 const Dashboard = () => {
-  const token = localStorage.getItem("token");
+  const rawToken = localStorage.getItem("token");
+  const token = rawToken && rawToken !== "null" ? JSON.parse(rawToken) : null;
+
   const navigate = useNavigate();
   const [data, setData] = useState<dataInterface[]>([]);
   const [copied, setCopied] = useState(false);
@@ -46,6 +48,24 @@ const Dashboard = () => {
   const [inputValue, setInputValue] = useRecoilState(inputValueState);
   const [tags, setTags] = useRecoilState(tagsState);
   const [tagValue, setTagValue] = useState("");
+
+  useEffect(() => {
+    console.log("token  :", token);
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    axios
+      .get(`${API_BASE}/content`, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        setData([...res.data.contents]);
+      })
+      .catch((res) => console.log(res));
+  }, [token]);
   const copyHandler = (link: string, id: string) => {
     setCopyId(id);
     navigator.clipboard.writeText(link);
@@ -84,18 +104,6 @@ const Dashboard = () => {
       })
       .catch((res) => console.log(res));
   };
-  useEffect(() => {
-    if (!token) {
-      navigate("/");
-      return;
-    }
-    axios
-      .get(`${API_BASE}/content`, { headers: { token } })
-      .then((res) => {
-        setData([...res.data.contents]);
-      })
-      .catch((res) => console.log(res));
-  }, [token]);
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
     return date.toLocaleDateString("en-GB");

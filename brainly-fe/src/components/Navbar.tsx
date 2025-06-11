@@ -30,12 +30,15 @@ const Navbar = () => {
   const [copied, setCopied] = useState(false);
   const [sharedLink, setSharedLink] = useState("");
   const [sharable, setSharable] = useState(false);
-  const token = localStorage.getItem("token");
+  const rawToken = localStorage.getItem("token");
+  const token = rawToken && rawToken !== "null" ? JSON.parse(rawToken) : null;
 
   useEffect(() => {
     axios
       .get(`${API_BASE}/shareon`, {
-        headers: { token },
+        headers: {
+          Authorization: token,
+        },
       })
       .then((res) => {
         setSharable(res.data.isSharing);
@@ -54,7 +57,15 @@ const Navbar = () => {
       setTagValue("");
     }
     axios
-      .post(`${API_BASE}/content`, { ...inputValue }, { headers: { token } })
+      .post(
+        `${API_BASE}/content`,
+        { ...inputValue },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      )
       .then()
       .catch((res) => console.log(res));
     setInputValue({ title: "", link: "", tags: [] });

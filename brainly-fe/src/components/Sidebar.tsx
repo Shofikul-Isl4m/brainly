@@ -10,7 +10,7 @@ const Sidebar = () => {
 
   const onclickhandler = () => {
     navigate("/signup");
-    localStorage.removeitem("token");
+    localStorage.removeItem("token");
   };
 
   const onclickhandler2 = () => {
