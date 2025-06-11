@@ -80,7 +80,9 @@ const Dashboard = () => {
     }
     axios
       .delete(`${API_BASE}/content/${id}`, {
-        headers: { token },
+        headers: {
+          Authorization: token,
+        },
       })
       .then((res) => console.log(res))
       .catch((res) => console.log(res));
@@ -92,7 +94,9 @@ const Dashboard = () => {
     }
     axios
       .get(`${API_BASE}/content/${id}`, {
-        headers: { token },
+        headers: {
+          Authorization: token,
+        },
       })
       .then((res) => {
         setInputValue({
@@ -122,7 +126,11 @@ const Dashboard = () => {
       .put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },
-        { headers: { token } }
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
       )
       .then((res) => console.log(res))
       .catch((res) => console.log(res));

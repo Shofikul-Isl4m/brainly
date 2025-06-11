@@ -98,7 +98,15 @@ const Navbar = () => {
   const checkedChangedHandler = () => {
     if (!sharable) {
       axios
-        .post(`${API_BASE}/shareon`, {}, { headers: { token } })
+        .post(
+          `${API_BASE}/shareon`,
+          {},
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
         .then((res) => {
           setSharedLink(`${window.location.origin}/share/` + res.data.slug);
           setSharable(res.data.isSharing);
@@ -106,7 +114,15 @@ const Navbar = () => {
         .catch((res) => console.log(res));
     } else {
       axios
-        .post(`${API_BASE}/shareoff`, {}, { headers: { token } })
+        .post(
+          `${API_BASE}/shareoff`,
+          {},
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
         .then((res) => {
           setSharedLink("");
           setSharable(res.data.isSharing);
