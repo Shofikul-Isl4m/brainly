@@ -158,9 +158,9 @@ const Navbar = () => {
                     </h1>
                     <Button className=" cursor-pointer" onClick={copyHandler}>
                       {copied ? (
-                        <FaCheck className="text-2xl duration-500 ease-in-out" />
+                        <FaCheck className="text-2xl " />
                       ) : (
-                        <MdOutlineContentCopy className="text-2xl duration-500 ease-in-out" />
+                        <MdOutlineContentCopy className="text-2xl " />
                       )}
                     </Button>
                   </div>
