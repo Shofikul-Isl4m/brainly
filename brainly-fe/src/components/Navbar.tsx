@@ -1,5 +1,4 @@
 import React from "react";
-console.log("React Version:", React.version);
 
 import Sidebar from "./Sidebar";
 import { Button } from "./ui/button";
@@ -30,72 +29,24 @@ const Navbar = () => {
   const [copied, setCopied] = useState(false);
   const [sharedLink, setSharedLink] = useState("");
   const [sharable, setSharable] = useState(false);
-  const rawToken = localStorage.getItem("token");
-  const token = rawToken && rawToken !== "null" ? JSON.parse(rawToken) : null;
+  const tokenRaw = localStorage.getItem("token");
+  const token = tokenRaw ? JSON.parse(tokenRaw) : null;
 
   useEffect(() => {
+    if (!token) {
+      return;
+    }
     axios
       .get(`${API_BASE}/shareon`, {
-        headers: {
-          Authorization: token,
-        },
+        headers: { Authorization: token },
       })
       .then((res) => {
         setSharable(res.data.isSharing);
-        setSharedLink(`${window.location.origin}/share/` + res.data.slug);
+        setSharedLink(`${window.location.origin}/share` + res.data.slug);
       });
   }, []);
-  if (!token) {
-    return;
-  }
 
-  const submithandler = () => {
-    if (tagValue) {
-      const newtags = [...tags, tagValue.trim()];
-      setTags(newtags);
-      setInputValue({ ...inputValue, tags: newtags });
-      setTagValue("");
-    }
-    axios
-      .post(
-        `${API_BASE}/content`,
-        { ...inputValue },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      )
-      .then()
-      .catch((res) => console.log(res));
-    setInputValue({ title: "", link: "", tags: [] });
-    setTags([]);
-    window.location.reload();
-  };
-
-  const handleTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      if (tagValue) {
-        const newtags = [...tags, tagValue.trim()];
-        setTags(newtags);
-        setInputValue({ ...inputValue, tags: newtags });
-        setTagValue("");
-      }
-    }
-  };
-  const handleFilterTags = (e: string) => {
-    const newtags = tags.filter((i) => i !== e);
-    setTags(newtags);
-    setInputValue({ ...inputValue, tags: newtags });
-  };
-  const copyHandler = () => {
-    navigator.clipboard.writeText(sharedLink);
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-    setCopied(true);
-  };
-  const checkedChangedHandler = () => {
+  function checkedchangedhandler() {
     if (!sharable) {
       axios
         .post(
@@ -108,10 +59,12 @@ const Navbar = () => {
           }
         )
         .then((res) => {
-          setSharedLink(`${window.location.origin}/share/` + res.data.slug);
           setSharable(res.data.isSharing);
+          setSharedLink(`${window.location.origin}/share` + res.data.slug);
         })
-        .catch((res) => console.log(res));
+        .catch((res) => {
+          console.log(res);
+        });
     } else {
       axios
         .post(
@@ -126,109 +79,153 @@ const Navbar = () => {
         .then((res) => {
           setSharedLink("");
           setSharable(res.data.isSharing);
-        })
-        .catch((res) => console.log(res));
+        });
+    }
+  }
+
+  const copyHandler = async () => {
+    try {
+      await navigator.clipboard.writeText(sharedLink);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Faailed to Copy :", error);
     }
   };
 
+  const handleFilterTags = (e: string) => {
+    const newTags = tags.filter((tag) => tag != e);
+    setTags(newTags);
+    setInputValue({ ...inputValue, tags: newTags });
+  };
+
+  const handleTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (tagValue) {
+        const newTags = [...tags, tagValue.trim()];
+        setTags(newTags);
+        setInputValue({ ...inputValue, tags: newTags });
+        setTagValue("");
+      }
+    }
+  };
+  const submithandler = () => {
+    if (tagValue) {
+      const newtags = [...tags, tagValue.trim()];
+      setTags(newtags);
+      setInputValue({ ...inputValue, tags: newtags });
+      setTagValue("");
+    }
+    axios
+      .post(
+        `${API_BASE}/content`,
+        { ...inputValue },
+        { headers: { Authorization: token } }
+      )
+      .then()
+      .catch((res) => console.log(res));
+    setInputValue({ title: "", link: "", tags: [] });
+    setTags([]);
+    window.location.reload();
+  };
   return (
-    <div className="flex justify-between px-10 py-5 items-center">
+    <div className="flex justify-between items-center px-10 py-5">
       <Sidebar />
-      <div className="mr-10 flex items-center">
+      <div className="mr-10 flex items-center ">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mx-1 rounded-sm cursor-pointer">Share</Button>
+            <Button className="cursor-pointer "> Share </Button>
           </DialogTrigger>
-          <DialogContent className="p-2 sm:p-6">
-            <DialogHeader>
-              <DialogTitle className="text-3xl">Your Sharable Link</DialogTitle>
-              <DialogDescription>
-                <h1 className="flex items-center justify-center sm:justify-start">
-                  Do You Want to Share all Your Links
-                  <Switch
-                    onCheckedChange={checkedChangedHandler}
-                    className="ml-5  cursor-pointer"
-                    checked={sharable}
-                  />
-                </h1>
-                {sharable && (
-                  <div className=" flex justify-between my-5 items-center flex-col sm:flex-row">
-                    <h1 className=" border py-3 px-10 bg-accent my-5 rounded-sm overflow-x-hidden sm:w-96 w-full break-words">
-                      {sharedLink}
-                    </h1>
-                    <Button className=" cursor-pointer" onClick={copyHandler}>
-                      {copied ? (
-                        <FaCheck className="text-2xl " />
-                      ) : (
-                        <MdOutlineContentCopy className="text-2xl " />
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </DialogDescription>
-            </DialogHeader>
+          <DialogContent className="p-6">
+            <DialogTitle className="text-3xl">Share Your Link</DialogTitle>
+            <DialogDescription>
+              <h1 className="flex items-center justify-start ">
+                Do You Want to Share all Your Links
+                <Switch
+                  className="ml-6"
+                  onCheckedChange={checkedchangedhandler}
+                  checked={sharable}
+                />
+              </h1>
+              {sharable && (
+                <div className=" flex items-center justify-between my-5">
+                  <h1 className="border px-10 py-3">{sharedLink}</h1>
+                  <Button
+                    className="cursor-pointer ml-6 "
+                    onClick={copyHandler}
+                  >
+                    {copied ? (
+                      <FaCheck className="text-2xl" />
+                    ) : (
+                      <MdOutlineContentCopy className="text-2xl" />
+                    )}
+                  </Button>
+                </div>
+              )}
+            </DialogDescription>
           </DialogContent>
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mx-1 rounded-sm mr-5 cursor-pointer">
-              Add Content
-            </Button>
+            <Button className="mx-3 p-5 rounded-sm">Add Content</Button>
           </DialogTrigger>
+
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="text-3xl">Add Content</DialogTitle>
-              <DialogDescription>
-                <Input
-                  placeholder="Title"
-                  type="text"
-                  className="my-4"
-                  value={inputValue.title}
-                  onChange={(e) =>
-                    setInputValue({ ...inputValue, title: e.target.value })
-                  }
-                />
-                <Input
-                  placeholder="Link"
-                  type="text"
-                  value={inputValue.link}
-                  onChange={(e) =>
-                    setInputValue({ ...inputValue, link: e.target.value })
-                  }
-                />
-                <div className="h-[300px] border my-4 overflow-x-hidden sm:w-[470px] overflow-y-scroll">
-                  {tags.map((e, i) => {
-                    return (
-                      <Badge className="m-2" key={e + i}>
-                        {e}{" "}
-                        <span
-                          className="text-accent text-lg"
-                          onClick={() => handleFilterTags(e)}
-                        >
-                          x
-                        </span>{" "}
-                      </Badge>
-                    );
-                  })}
-                </div>
-                <Input
-                  placeholder="tags"
-                  type="text"
-                  value={tagValue}
-                  onKeyDown={handleTags}
-                  onChange={(e) => {
-                    setTagValue(e.target.value);
-                  }}
-                />
-                <Button
-                  className="mt-2 cursor-pointer rounded-sm w-full"
-                  onClick={submithandler}
-                  disabled={!inputValue.title || !inputValue.link}
-                >
-                  Add Content
-                </Button>
-              </DialogDescription>
-            </DialogHeader>
+            <DialogHeader className="text-3xl">Add Content</DialogHeader>
+            <DialogDescription>
+              <Input
+                placeholder="title"
+                type="text"
+                value={inputValue.title}
+                className="my-6"
+                onChange={(e) =>
+                  setInputValue({ ...inputValue, title: e.target.value })
+                }
+              />
+              <Input
+                placeholder="link"
+                type="text"
+                value={inputValue.link}
+                className="my-6"
+                onChange={(e) =>
+                  setInputValue({ ...inputValue, link: e.target.value })
+                }
+              />
+              <div className="h-[100px] border my-4 overflow-y-scroll">
+                {tags.map((e, i) => {
+                  return (
+                    <Badge className="m-2" key={e + i}>
+                      {e}{" "}
+                      <span
+                        className="text-accent text-lg ml-1"
+                        onClick={() => handleFilterTags(e)}
+                      >
+                        x
+                      </span>
+                    </Badge>
+                  );
+                })}
+              </div>
+
+              <Input
+                placeholder="tags"
+                type="text"
+                value={tagValue}
+                onKeyDown={handleTags}
+                onChange={(e) => {
+                  setTagValue(e.target.value);
+                }}
+              />
+              <Button
+                className="mt-2 cursor-pointer rounded-sm w-full"
+                onClick={submithandler}
+                disabled={!inputValue.title || !inputValue.link}
+              >
+                Add Link
+              </Button>
+            </DialogDescription>
           </DialogContent>
         </Dialog>
       </div>

@@ -28,6 +28,7 @@ import { useRecoilState } from "recoil";
 import { inputValueState, tagsState } from "@/store/atoms";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import e from "cors";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface dataInterface {
@@ -39,18 +40,17 @@ interface dataInterface {
 }
 const Dashboard = () => {
   const rawToken = localStorage.getItem("token");
-  const token = rawToken && rawToken !== "null" ? JSON.parse(rawToken) : null;
+  const token = rawToken && rawToken != "null" ? JSON.parse(rawToken) : null;
 
   const navigate = useNavigate();
   const [data, setData] = useState<dataInterface[]>([]);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(true);
   const [copyId, setCopyId] = useState("");
   const [inputValue, setInputValue] = useRecoilState(inputValueState);
   const [tags, setTags] = useRecoilState(tagsState);
   const [tagValue, setTagValue] = useState("");
 
   useEffect(() => {
-    console.log("token  :", token);
     if (!token) {
       navigate("/");
       return;
@@ -58,7 +58,7 @@ const Dashboard = () => {
     axios
       .get(`${API_BASE}/content`, {
         headers: {
-          Authorization: token,
+          authorization: token,
         },
       })
       .then((res) => {
@@ -66,27 +66,14 @@ const Dashboard = () => {
       })
       .catch((res) => console.log(res));
   }, [token]);
+
   const copyHandler = (link: string, id: string) => {
     setCopyId(id);
     navigator.clipboard.writeText(link);
+    setCopied(true);
     setTimeout(() => {
       setCopied(false);
     }, 2000);
-    setCopied(true);
-  };
-  const deleteContent = (id: string) => {
-    if (!token) {
-      return;
-    }
-    axios
-      .delete(`${API_BASE}/content/${id}`, {
-        headers: {
-          Authorization: token,
-        },
-      })
-      .then((res) => console.log(res))
-      .catch((res) => console.log(res));
-    window.location.reload();
   };
   const editValuesHandler = (id: string) => {
     if (!token) {
@@ -104,17 +91,25 @@ const Dashboard = () => {
           link: res.data.content.link,
           tags: [...res.data.content.tags],
         });
-        setTags([...res.data.content.tags]);
-      })
-      .catch((res) => console.log(res));
+        setTags([res.data.content.tags]);
+      });
   };
-  const formatDate = (isoString: string): string => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("en-GB");
+  const handleFilterTags = (e: string) => {
+    const newTags = tags.filter((tag) => tag != e);
+    setTags(newTags);
+    setInputValue({ ...inputValue, tags: newTags });
   };
-  if (!token) {
-    return;
-  }
+  const handleTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (tagValue) {
+        const newTags = [...tags, tagValue.trim()];
+        setTags(newTags);
+        setInputValue({ ...inputValue, tags: newTags });
+        setTagValue("");
+      }
+    }
+  };
+
   const submithandler = (id: string) => {
     if (tagValue) {
       const newtags = [...tags, tagValue.trim()];
@@ -126,11 +121,7 @@ const Dashboard = () => {
       .put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
+        { headers: { token: JSON.parse(token) } }
       )
       .then((res) => console.log(res))
       .catch((res) => console.log(res));
@@ -138,44 +129,32 @@ const Dashboard = () => {
     setTags([]);
     window.location.reload();
   };
-  const handleTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      if (tagValue) {
-        const newtags = [...tags, tagValue.trim()];
-        setTags(newtags);
-        setInputValue({ ...inputValue, tags: newtags });
-        setTagValue("");
-      }
-    }
-  };
-  const handleFilterTags = (e: string) => {
-    const newtags = tags.filter((i) => i !== e);
-    setTags(newtags);
-    setInputValue({ ...inputValue, tags: newtags });
-  };
+
   return (
-    <div className="flex justify-start mt-5 lg:w-[80vw] md:w-[90vw] mb-5 m-auto flex-wrap">
+    <div className="flex justify-start mt-5 mb-5 m-auto flex-wrap">
       {data.map((e: dataInterface) => {
         const youtube = e.link.includes("youtube.com");
         const twitter =
-          e.link.includes("twitter.com") || e.link.includes("x.com");
+          e.link.includes("twitter.com ") || e.link.includes("x.com");
         function convertToEmbedUrl(youtubeUrl: string) {
-          const urlPattern =
+          const urlpattern =
             /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
-          const match = youtubeUrl.match(urlPattern);
+          const match = youtubeUrl.match(urlpattern);
           if (match && match[1]) {
-            return `https://www.youtube.com/embed/${match[1]}?si=O8eFX0as4ErK1yu7`;
+            return `http://www.youtube.com/embed/${match[1]}`;
           }
         }
+
         const nlink = convertToEmbedUrl(e.link);
+
         return (
           <Card
             className=" md:w-96 w-full h-[480px] overflow-auto m-3"
             key={e._id}
           >
             <CardHeader>
-              <CardTitle className="flex justify-around items-center">
-                <div className="flex">
+              <CardTitle className="flex justify-around items-center ">
+                <div>
                   {youtube && (
                     <FaYoutube className="text-2xl mr-4 cursor-pointer" />
                   )}
@@ -186,13 +165,13 @@ const Dashboard = () => {
                     <HiOutlineDocument className="text-2xl mr-4 cursor-pointer" />
                   )}
                 </div>
-                <p className=" text-center p-1">{e.title}</p>
+                <p className="text-center p-1">{e.title}</p>
                 <div className="flex">
                   {copied && copyId == e._id ? (
-                    <FaCheck className="text-2xl duration-500 ease-in-out" />
+                    <FaCheck className="text-2xl " />
                   ) : (
                     <MdOutlineContentCopy
-                      className="text-2xl duration-500 ease-in-out cursor-pointer"
+                      className="text-2xl cursor-pointer"
                       onClick={() => copyHandler(e.link, e._id)}
                     />
                   )}
@@ -201,129 +180,75 @@ const Dashboard = () => {
                       <MdOutlineEdit className="text-2xl ml-2 cursor-pointer" />
                     </DialogTrigger>
                     <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle className="text-3xl">
-                          Edit Content
-                        </DialogTitle>
-                        <DialogDescription>
-                          <Input
-                            placeholder="Title"
-                            type="text"
-                            className="my-4"
-                            value={inputValue.title}
-                            onChange={(e) =>
-                              setInputValue({
-                                ...inputValue,
-                                title: e.target.value,
-                              })
-                            }
-                          />
-                          <Input
-                            placeholder="Link"
-                            type="text"
-                            value={inputValue.link}
-                            onChange={(e) =>
-                              setInputValue({
-                                ...inputValue,
-                                link: e.target.value,
-                              })
-                            }
-                          />
-                          <div className="h-[300px] border my-4 overflow-x-hidden sm:w-[470px] overflow-y-scroll">
-                            {tags.map((e, i) => {
-                              return (
-                                <Badge className="m-2" key={e + i}>
-                                  {e}{" "}
-                                  <span
-                                    className="text-accent text-lg"
-                                    onClick={() => handleFilterTags(e)}
-                                  >
-                                    x
-                                  </span>{" "}
-                                </Badge>
-                              );
-                            })}
-                          </div>
-                          <Input
-                            placeholder="tags"
-                            type="text"
-                            value={tagValue}
-                            onKeyDown={handleTags}
-                            onChange={(e) => {
-                              setTagValue(e.target.value);
-                            }}
-                          />
-                          <Button
-                            className="mt-2 cursor-pointer rounded-sm"
-                            onClick={() => submithandler(e._id)}
-                            disabled={!inputValue.title || !inputValue.link}
-                          >
-                            Update Link
-                          </Button>
-                        </DialogDescription>
+                      <DialogHeader className="text-3xl">
+                        Add Content
                       </DialogHeader>
+                      <DialogDescription>
+                        <Input
+                          placeholder="title"
+                          type="text"
+                          value={inputValue.title}
+                          className="my-6"
+                          onChange={(e) =>
+                            setInputValue({
+                              ...inputValue,
+                              title: e.target.value,
+                            })
+                          }
+                        />
+                        <Input
+                          placeholder="link"
+                          type="text"
+                          value={inputValue.link}
+                          className="my-6"
+                          onChange={(e) =>
+                            setInputValue({
+                              ...inputValue,
+                              link: e.target.value,
+                            })
+                          }
+                        />
+                        <div className="h-[100px] border my-4 overflow-y-scroll">
+                          {tags.map((e, i) => {
+                            return (
+                              <Badge className="m-2" key={e + i}>
+                                {e}{" "}
+                                <span
+                                  className="text-accent text-lg ml-1"
+                                  onClick={() => handleFilterTags(e)}
+                                >
+                                  x
+                                </span>
+                              </Badge>
+                            );
+                          })}
+                        </div>
+
+                        <Input
+                          placeholder="tags"
+                          type="text"
+                          value={tagValue}
+                          onKeyDown={handleTags}
+                          onChange={(e) => {
+                            setTagValue(e.target.value);
+                          }}
+                        />
+                        <Button
+                          className="mt-2 cursor-pointer rounded-sm w-full"
+                          onClick={() => submithandler(e._id)}
+                          disabled={!inputValue.title || !inputValue.link}
+                        >
+                          Update Link
+                        </Button>
+                      </DialogDescription>
                     </DialogContent>
                   </Dialog>
-                  <MdOutlineDelete
-                    className="text-2xl ml-2 cursor-pointer"
-                    onClick={() => deleteContent(e._id)}
-                  />
                 </div>
               </CardTitle>
-              {twitter && (
-                <div className=" rounded-lg px-2">
-                  <blockquote className="twitter-tweet">
-                    <a href={e.link.replace("x.com", "twitter.com")}></a>
-                  </blockquote>
-                </div>
-              )}
-              {youtube && (
-                <div className=" rounded-lg">
-                  <iframe
-                    className=" w-full h-60 px-5 pb-2 rounded-lg mt-5"
-                    width="560"
-                    height="315"
-                    src={nlink}
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              )}
-              {!youtube && !twitter && (
-                <a
-                  href={`${e.link}`}
-                  className=" mx-4 inline-block my-2 underline text-primary"
-                  target="_blank"
-                >
-                  Your Link
-                </a>
-              )}
-              {!youtube && !twitter && (
-                <iframe src={`${e.link}`} className="w-full h-[250px]"></iframe>
-              )}
             </CardHeader>
-            <CardContent>
-              {e.tags.map((i) => {
-                return (
-                  <Badge className="m-2" key={e._id + i}>
-                    #{i}
-                  </Badge>
-                );
-              })}
-            </CardContent>
-            <CardFooter>
-              <p>Added on {formatDate(e.createdAt)}</p>
-            </CardFooter>
           </Card>
         );
       })}
-      {!data.length && (
-        <h1 className="flex justify-center items-center w-screen h-[80vh] text-6xl">
-          No Content
-        </h1>
-      )}
     </div>
   );
 };

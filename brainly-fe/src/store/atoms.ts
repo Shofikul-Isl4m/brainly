@@ -7,7 +7,7 @@ interface Inputs {
 }
 
 export const inputValueState = atom<Inputs>({
-  key: "inputValue1",
+  key: "inputValue",
   default: { title: "", link: "", tags: [] },
 });
 
