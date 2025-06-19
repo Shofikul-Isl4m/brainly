@@ -129,6 +129,24 @@ const Dashboard = () => {
     setTags([]);
     window.location.reload();
   };
+  const deleteContent = (id: string) => {
+    if (!token) {
+      return;
+    }
+    axios
+      .delete(`${API_BASE}/content/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => console.log(res))
+      .catch((res) => console.log(res));
+    window.location.reload();
+  };
+  const formatDate = (isoString: string): string => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("en-GB");
+  };
 
   return (
     <div className="flex justify-start mt-5 mb-5 m-auto flex-wrap">
@@ -243,12 +261,64 @@ const Dashboard = () => {
                       </DialogDescription>
                     </DialogContent>
                   </Dialog>
+                  <MdOutlineDelete
+                    className="text-2xl ml-2 cursor-pointer"
+                    onClick={() => deleteContent(e._id)}
+                  />
                 </div>
               </CardTitle>
+              {twitter && (
+                <div className="rounded-lg px-2">
+                  <blockquote className="twitter-tweet">
+                    <a href={e.link.replace("x.com", "twitter.com")}></a>
+                  </blockquote>
+                </div>
+              )}
+              {youtube && (
+                <div className="rounded-lg border">
+                  <iframe
+                    src={nlink}
+                    title="Youtube Video player"
+                    className=" w-full h-80 px-5 pb-2 rounded-lg mt-5"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
+              {!youtube && !twitter && (
+                <a
+                  href={`${e.link}`}
+                  className=" mx-4 inline-block my-2 underline text-primary"
+                  target="_blank"
+                >
+                  Your Link
+                </a>
+              )}
+              {!youtube && !twitter && (
+                <iframe src={`${e.link}`} className="w-full h-[250px]"></iframe>
+              )}
             </CardHeader>
+            <CardContent>
+              {e.tags.map((i) => {
+                return (
+                  <Badge className="m-2" key={e._id + i}>
+                    #{i}
+                  </Badge>
+                );
+              })}
+            </CardContent>
+            <CardFooter>
+              <p>Added on {formatDate(e.createdAt)}</p>
+            </CardFooter>
           </Card>
         );
       })}
+      {!data.length && (
+        <h1 className="flex justify-center items-center w-screen h-[80vh] text-6xl">
+          No Content
+        </h1>
+      )}
     </div>
   );
 };
