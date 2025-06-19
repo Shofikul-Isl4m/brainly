@@ -3,6 +3,7 @@ import Credentials from "./pages/Credentials";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import NoPage from "./pages/NoPage";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/user" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="*" element={<NoPage />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
         <Route path="/" element={<Credentials />} />
         <Route path="/signup" element={<Credentials />} />
