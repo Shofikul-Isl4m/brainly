@@ -6,6 +6,54 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import z from "zod";
+
+const formSchema = z
+  .object({
+    oldPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[@$!%*?&]/, {
+        message: "Password must contain at least one special character",
+      }),
+    newPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[@$!%*?&]/, {
+        message: "Password must contain at least one special character",
+      }),
+    ConfirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[@$!%*?&]/, {
+        message: "Password must contain at least one special character",
+      }),
+  })
+  .refine((data) => data.newPassword === data.ConfirmPassword, {
+    message: "Confirm password must match newPassword",
+    path: ["ConfirmPassword"],
+  });
 
 const Profile = () => {
   const API_BASE = import.meta.env.VITE_API_BASE;
@@ -29,7 +77,24 @@ const Profile = () => {
       .catch((res) => console.log(res));
   });
 
-  const onSubmit = () => {};
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (!token) {
+      return;
+    }
+    axios
+      .put(
+        `${API_BASE}/changePassword`,
+        { ...values },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      )
+      .then(() => toast.success("password changed Successfully"))
+      .catch(() => toast.error("wrong user password"));
+    form.reset();
+  };
   return (
     <div className="flex justify-center items-center flex-col h-[90vh]">
       <Toaster position="top-right" reverseOrder={false} />
@@ -60,7 +125,7 @@ const Profile = () => {
             />
             <FormField
               control={form.control}
-              name="NewPassword"
+              name="newPassword"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>

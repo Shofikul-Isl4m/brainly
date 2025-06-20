@@ -5,6 +5,8 @@ import Dashboard from "./pages/Dashboard";
 import NoPage from "./pages/NoPage";
 import Profile from "./pages/Profile";
 import SharedPage from "./pages/SharedPage";
+import Youtube from "./pages/Youtube";
+import Tweets from "./pages/Tweets";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="*" element={<NoPage />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="videos" element={<Youtube />} />
+          <Route path="tweets" element={<Tweets />} />
         </Route>
         <Route path="/" element={<Credentials />} />
         <Route path="/signup" element={<Credentials />} />
