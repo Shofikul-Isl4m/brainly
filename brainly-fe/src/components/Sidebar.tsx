@@ -50,7 +50,7 @@ const Sidebar = () => {
           className="flex hover:bg-accent py-2 cursor-pointer"
         >
           <FaYoutube className=" mx-5 text-3xl" />
-          Videos
+          Youtube
         </h1>
         <h1
           onClick={onclickhandler2}

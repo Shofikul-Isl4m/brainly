@@ -149,7 +149,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex justify-start mt-5 mb-5 m-auto flex-wrap">
+    <div className="flex justify-start mt-5 mb-5 m-auto flex-wrap bg-warning text-warning-foreground">
       {data.map((e: dataInterface) => {
         const youtube = e.link.includes("youtube.com");
         const twitter =

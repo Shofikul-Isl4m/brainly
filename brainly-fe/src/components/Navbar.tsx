@@ -20,6 +20,7 @@ import { Switch } from "./ui/switch";
 import { Badge } from "./ui/badge";
 import { inputValueState, tagsState } from "@/store/atoms";
 import { useRecoilState } from "recoil";
+import { ModeToggle } from "./mode-toggle";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 const Navbar = () => {
@@ -136,7 +137,7 @@ const Navbar = () => {
       <div className="mr-10 flex items-center ">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="cursor-pointer "> Share </Button>
+            <Button className="cursor-pointer   rounded-sm "> Share </Button>
           </DialogTrigger>
           <DialogContent className="p-6">
             <DialogTitle className="text-3xl">Share Your Link</DialogTitle>
@@ -169,7 +170,7 @@ const Navbar = () => {
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mx-3 p-5 rounded-sm">Add Content</Button>
+            <Button className="mx-3  rounded-sm">Add Content</Button>
           </DialogTrigger>
 
           <DialogContent>
@@ -228,6 +229,7 @@ const Navbar = () => {
             </DialogDescription>
           </DialogContent>
         </Dialog>
+        <ModeToggle />
       </div>
     </div>
   );
