@@ -60,7 +60,7 @@ const Navbar = () => {
         )
         .then((res) => {
           setSharable(res.data.isSharing);
-          setSharedLink(`${window.location.origin}/share` + res.data.slug);
+          setSharedLink(`${window.location.origin}/share/` + res.data.slug);
         })
         .catch((res) => {
           console.log(res);

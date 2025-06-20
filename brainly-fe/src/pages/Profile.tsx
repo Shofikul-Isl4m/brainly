@@ -40,9 +40,9 @@ const Profile = () => {
         <h1>Total Saved Posts : {user.posts}</h1>
       </Card>
       <Card className="px-6 gap-4 mt-10 w-72 sm:w-96">
-        <h1 className="text-3xl">Change Password </h1>
+        <h1 className="text-3xl my-4">Change Password </h1>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="oldPassword"
@@ -88,7 +88,9 @@ const Profile = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="cursor-pointer"></Button>
+            <Button type="submit" className="cursor-pointer w-full my-2">
+              Submit
+            </Button>
           </form>
         </Form>
       </Card>

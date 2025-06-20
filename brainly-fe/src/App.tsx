@@ -4,6 +4,7 @@ import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import NoPage from "./pages/NoPage";
 import Profile from "./pages/Profile";
+import SharedPage from "./pages/SharedPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         </Route>
         <Route path="/" element={<Credentials />} />
         <Route path="/signup" element={<Credentials />} />
+        <Route path="/share/:id" element={<SharedPage />} />
       </Routes>
     </BrowserRouter>
   );
