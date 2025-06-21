@@ -9,7 +9,14 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node", // ✅ Add this
-    "resolveJsonModule": true // ✅ Optional but useful for .env or JSON configs
+    "resolveJsonModule": true, // ✅ Optional but useful for .env or JSON configs
+    "typeRoots": [
+      "./node_modules/@types", // Default type location
+      "./src/@types" // Custom type location (if any)
+    ],
+    "declaration": true, // ← Add this to generate .d.ts files
+    "declarationMap": true, // ← Optional: source maps for types
+    "emitDeclarationOnly": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"] // ✅ Optional but avoids extra work for TS
