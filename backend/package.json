@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm install",
     "build": "tsc -b",
     "start": "node dist/index.js",
     "dev": "npm run build && npm run start"
@@ -25,8 +24,10 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.1",
-    "@types/jsonwebtoken": "^9.0.9",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
     "@types/node": "^24.0.3",
     "@types/uuid": "^10.0.0"
   }
