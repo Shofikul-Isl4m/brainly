@@ -64,7 +64,7 @@ const Dashboard = () => {
         setData([...res.data.contents]);
       })
       .catch((res) => console.log(res));
-  }, [token]);
+  }, [data]);
 
   const copyHandler = (link: string, id: string) => {
     setCopyId(id);

@@ -112,24 +112,26 @@ const Navbar = () => {
       }
     }
   };
-  const submithandler = () => {
-    if (tagValue) {
+  const submithandler = async () => {
+    if (!tagValue) return; // Early exit if no tag
+
+    try {
       const newtags = [...tags, tagValue.trim()];
-      setTags(newtags);
-      setInputValue({ ...inputValue, tags: newtags });
-      setTagValue("");
+      const payload = { ...inputValue, tags: newtags };
+
+      // 👇 Wait for the request to complete
+      const response = await axios.post(`${API_BASE}/content`, payload, {
+        headers: { Authorization: token },
+      });
+
+      console.log("✅ Success:", response.data);
+
+      // Reset only AFTER success
+      setInputValue({ title: "", link: "", tags: [] });
+      setTags([]);
+    } catch (error: any) {
+      console.error("❌ Failed:", error.response?.data || error.message);
     }
-    axios
-      .post(
-        `${API_BASE}/content`,
-        { ...inputValue },
-        { headers: { Authorization: token } }
-      )
-      .then()
-      .catch((res) => console.log(res));
-    setInputValue({ title: "", link: "", tags: [] });
-    setTags([]);
-    window.location.reload();
   };
   return (
     <div className="flex justify-between items-center px-10 py-5">
