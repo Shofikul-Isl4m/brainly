@@ -28,6 +28,7 @@ import { inputValueState, refreshKeyState, tagsState } from "@/store/atoms";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import e from "cors";
+import TwitterEmbed from "@/components/TwitterEmbed";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface dataInterface {
@@ -74,11 +75,11 @@ const Dashboard = () => {
       setCopied(false);
     }, 2000);
   };
-  const editValuesHandler = (id: string) => {
+  const editValuesHandler = async (id: string) => {
     if (!token) {
       return;
     }
-    axios
+    await axios
       .get(`${API_BASE}/content/${id}`, {
         headers: {
           Authorization: token,
@@ -109,14 +110,14 @@ const Dashboard = () => {
     }
   };
 
-  const submithandler = (id: string) => {
+  const submithandler = async (id: string) => {
     if (tagValue) {
       const newtags = [...tags, tagValue.trim()];
       setTags(newtags);
       setInputValue({ ...inputValue, tags: newtags });
       setTagValue("");
     }
-    axios
+    await axios
       .put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },
@@ -154,11 +155,19 @@ const Dashboard = () => {
         const twitter =
           e.link.includes("twitter.com ") || e.link.includes("x.com");
         function convertToEmbedUrl(youtubeUrl: string) {
-          const urlpattern =
-            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
-          const match = youtubeUrl.match(urlpattern);
-          if (match && match[1]) {
-            return `http://www.youtube.com/embed/${match[1]}`;
+          // Handle various YouTube URL formats
+          const patterns = [
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]+)/,
+          ];
+
+          for (const pattern of patterns) {
+            const match = youtubeUrl.match(pattern);
+            if (match && match[1]) {
+              return `https://www.youtube.com/embed/${match[1]}`; // Use HTTPS
+            }
           }
         }
 
@@ -269,7 +278,7 @@ const Dashboard = () => {
               {twitter && (
                 <div className="rounded-lg px-2">
                   <blockquote className="twitter-tweet">
-                    <a href={e.link.replace("x.com", "twitter.com")}></a>
+                    <TwitterEmbed url={e.link} />
                   </blockquote>
                 </div>
               )}
