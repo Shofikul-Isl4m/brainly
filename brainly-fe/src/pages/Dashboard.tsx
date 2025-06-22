@@ -50,6 +50,7 @@ const Dashboard = () => {
   const [tags, setTags] = useRecoilState(tagsState);
   const [tagValue, setTagValue] = useState("");
   const [refreshkey, setRefreshKey] = useRecoilState(refreshKeyState);
+  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     if (!token) {
       navigate("/");
@@ -79,6 +80,7 @@ const Dashboard = () => {
     if (!token) {
       return;
     }
+    setIsOpen(true);
     await axios
       .get(`${API_BASE}/content/${id}`, {
         headers: {
@@ -111,23 +113,26 @@ const Dashboard = () => {
   };
 
   const submithandler = async (id: string) => {
-    if (tagValue) {
-      const newtags = [...tags, tagValue.trim()];
-      setTags(newtags);
-      setInputValue({ ...inputValue, tags: newtags });
-      setTagValue("");
-    }
-    await axios
-      .put(
+    try {
+      if (tagValue) {
+        const newtags = [...tags, tagValue.trim()];
+        setTags(newtags);
+        setInputValue({ ...inputValue, tags: newtags });
+        setTagValue("");
+      }
+      await axios.put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },
         { headers: { Authorization: token } }
-      )
-      .then((res) => console.log(res))
-      .catch((res) => console.log(res));
-    setInputValue({ title: "", link: "", tags: [] });
-    setTags([]);
-    setRefreshKey((value) => value + 1);
+      );
+
+      setInputValue({ title: "", link: "", tags: [] });
+      setTags([]);
+      setRefreshKey((value) => value + 1);
+      setIsOpen(false);
+    } catch (error) {
+      console.error("error", error);
+    }
   };
   const deleteContent = async (id: string) => {
     if (!token) {
@@ -201,13 +206,20 @@ const Dashboard = () => {
                       onClick={() => copyHandler(e.link, e._id)}
                     />
                   )}
-                  <Dialog>
+                  <Dialog
+                    open={isOpen}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setIsOpen(false);
+                      }
+                    }}
+                  >
                     <DialogTrigger onClick={() => editValuesHandler(e._id)}>
                       <MdOutlineEdit className="text-2xl ml-2 cursor-pointer" />
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader className="text-3xl">
-                        Add Content
+                        Update Content
                       </DialogHeader>
                       <DialogDescription>
                         <Input
