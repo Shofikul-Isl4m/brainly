@@ -15,3 +15,8 @@ export const tagsState = atom<string[]>({
   key: "tagsState",
   default: [],
 });
+
+export const refreshKeyState = atom<number>({
+  key: "refreshkey",
+  default: 0,
+});

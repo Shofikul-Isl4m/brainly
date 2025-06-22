@@ -18,8 +18,8 @@ import axios from "axios";
 import { FaCheck } from "react-icons/fa6";
 import { Switch } from "./ui/switch";
 import { Badge } from "./ui/badge";
-import { inputValueState, tagsState } from "@/store/atoms";
-import { useRecoilState } from "recoil";
+import { inputValueState, refreshKeyState, tagsState } from "@/store/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { ModeToggle } from "./mode-toggle";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -30,6 +30,8 @@ const Navbar = () => {
   const [copied, setCopied] = useState(false);
   const [sharedLink, setSharedLink] = useState("");
   const [sharable, setSharable] = useState(false);
+  const setRefreshKey = useSetRecoilState(refreshKeyState);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const tokenRaw = localStorage.getItem("token");
   const token = tokenRaw ? JSON.parse(tokenRaw) : null;
 
@@ -112,9 +114,7 @@ const Navbar = () => {
       }
     }
   };
-  const submithandler = async () => {
-    if (!tagValue) return; // Early exit if no tag
-
+  const submithandler = async (onsuccess?: any) => {
     try {
       const newtags = [...tags, tagValue.trim()];
       const payload = { ...inputValue, tags: newtags };
@@ -129,10 +129,12 @@ const Navbar = () => {
       // Reset only AFTER success
       setInputValue({ title: "", link: "", tags: [] });
       setTags([]);
+      setRefreshKey((prev) => prev + 1);
     } catch (error: any) {
       console.error("❌ Failed:", error.response?.data || error.message);
     }
   };
+
   return (
     <div className="flex justify-between items-center px-10 py-5">
       <Sidebar />
@@ -170,8 +172,19 @@ const Navbar = () => {
             </DialogDescription>
           </DialogContent>
         </Dialog>
-        <Dialog>
-          <DialogTrigger asChild>
+        <Dialog
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              // This handles:
+              // - Clicking outside the dialog
+              // - Pressing Escape
+              // - Clicking the X button
+              setDialogOpen(false);
+            }
+          }}
+        >
+          <DialogTrigger asChild onClick={() => setDialogOpen(true)}>
             <Button className="mx-3  rounded-sm">Add Content</Button>
           </DialogTrigger>
 
@@ -223,7 +236,7 @@ const Navbar = () => {
               />
               <Button
                 className="mt-2 cursor-pointer rounded-sm w-full"
-                onClick={submithandler}
+                onClick={submithandler(() => setDialogOpen(false))}
                 disabled={!inputValue.title || !inputValue.link}
               >
                 Add Link

@@ -24,7 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRecoilState } from "recoil";
-import { inputValueState, tagsState } from "@/store/atoms";
+import { inputValueState, refreshKeyState, tagsState } from "@/store/atoms";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import e from "cors";
@@ -48,7 +48,7 @@ const Dashboard = () => {
   const [inputValue, setInputValue] = useRecoilState(inputValueState);
   const [tags, setTags] = useRecoilState(tagsState);
   const [tagValue, setTagValue] = useState("");
-
+  const [refreshkey, setRefreshKey] = useRecoilState(refreshKeyState);
   useEffect(() => {
     if (!token) {
       navigate("/");
@@ -64,7 +64,7 @@ const Dashboard = () => {
         setData([...res.data.contents]);
       })
       .catch((res) => console.log(res));
-  }, [data]);
+  }, [refreshkey]);
 
   const copyHandler = (link: string, id: string) => {
     setCopyId(id);
