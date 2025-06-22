@@ -143,11 +143,19 @@ const Youtube = () => {
       {data.map((e: dataInterface) => {
         const youtube = e.link.includes("youtube.com");
         function convertToEmbedUrl(youtubeUrl: string) {
-          const urlPattern =
-            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
-          const match = youtubeUrl.match(urlPattern);
-          if (match && match[1]) {
-            return `https://www.youtube.com/embed/${match[1]}?si=O8eFX0as4ErK1yu7`;
+          // Handle various YouTube URL formats
+          const patterns = [
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]+)/,
+          ];
+
+          for (const pattern of patterns) {
+            const match = youtubeUrl.match(pattern);
+            if (match && match[1]) {
+              return `https://www.youtube.com/embed/${match[1]}`;
+            }
           }
         }
         const nlink = convertToEmbedUrl(e.link);
