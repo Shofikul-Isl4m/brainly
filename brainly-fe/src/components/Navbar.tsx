@@ -176,10 +176,6 @@ const Navbar = () => {
           open={dialogOpen}
           onOpenChange={(open) => {
             if (!open) {
-              // This handles:
-              // - Clicking outside the dialog
-              // - Pressing Escape
-              // - Clicking the X button
               setDialogOpen(false);
             }
           }}
@@ -236,7 +232,11 @@ const Navbar = () => {
               />
               <Button
                 className="mt-2 cursor-pointer rounded-sm w-full"
-                onClick={submithandler(() => setDialogOpen(false))}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await submithandler();
+                  setDialogOpen(false);
+                }}
                 disabled={!inputValue.title || !inputValue.link}
               >
                 Add Link
