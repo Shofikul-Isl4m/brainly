@@ -121,7 +121,7 @@ const Dashboard = () => {
       .put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },
-        { headers: { token: JSON.parse(token) } }
+        { headers: { Authorization: token } }
       )
       .then((res) => console.log(res))
       .catch((res) => console.log(res));
