@@ -51,9 +51,9 @@ const Navbar = () => {
       });
   }, []);
 
-  function checkedchangedhandler() {
+  const checkedchangedhandler = async () => {
     if (!sharable) {
-      axios
+      await axios
         .post(
           `${API_BASE}/shareon`,
           {},
@@ -71,7 +71,7 @@ const Navbar = () => {
           console.log(res);
         });
     } else {
-      axios
+      await axios
         .post(
           `${API_BASE}/shareoff`,
           {},
@@ -86,7 +86,7 @@ const Navbar = () => {
           setSharable(res.data.isSharing);
         });
     }
-  }
+  };
 
   const copyHandler = async () => {
     try {

@@ -13,6 +13,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import NoPage from "./NoPage";
 import { MdOutlineContentCopy } from "react-icons/md";
+import { useRecoilValue } from "recoil";
+import { refreshKeyState } from "@/store/atoms";
+import TwitterEmbed from "@/components/TwitterEmbed";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface dataInterface {
@@ -23,12 +26,11 @@ interface dataInterface {
   createdAt: string;
 }
 const SharedPage = () => {
-  const rawtoken = localStorage.getItem("token");
-  const token = rawtoken && rawtoken != "null" ? JSON.parse(rawtoken) : null;
   const [data, setData] = useState<dataInterface[]>([]);
   const [copied, setCopied] = useState(false);
   const [copyId, setCopyId] = useState("");
   const { id } = useParams();
+  const refreshkey = useRecoilValue(refreshKeyState);
   useEffect(() => {
     axios
       .get(`${API_BASE}/share/${id}`)
@@ -38,7 +40,7 @@ const SharedPage = () => {
       .catch(() => {
         setData([]);
       });
-  }, [token]);
+  }, [refreshkey]);
 
   const copyHandler = (link: string, id: string) => {
     setCopyId(id);
@@ -61,11 +63,19 @@ const SharedPage = () => {
         const twitter =
           e.link.includes("twitter.com") || e.link.includes("x.com");
         function convertToEmbedUrl(youtubeUrl: string) {
-          const urlPattern =
-            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
-          const match = youtubeUrl.match(urlPattern);
-          if (match && match[1]) {
-            return `https://www.youtube.com/embed/${match[1]}?si=O8eFX0as4ErK1yu7`;
+          // Handle various YouTube URL formats
+          const patterns = [
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]+)/,
+            /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]+)/,
+          ];
+
+          for (const pattern of patterns) {
+            const match = youtubeUrl.match(pattern);
+            if (match && match[1]) {
+              return `https://www.youtube.com/embed/${match[1]}`;
+            }
           }
         }
         const nlink = convertToEmbedUrl(e.link);
@@ -99,7 +109,7 @@ const SharedPage = () => {
               {twitter && (
                 <div className=" rounded-lg px-2">
                   <blockquote className="twitter-tweet">
-                    <a href={e.link.replace("x.com", "twitter.com")}></a>
+                    <TwitterEmbed url={e.link} />
                   </blockquote>
                 </div>
               )}
