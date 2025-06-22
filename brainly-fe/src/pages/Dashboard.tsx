@@ -126,7 +126,7 @@ const Dashboard = () => {
       .catch((res) => console.log(res));
     setInputValue({ title: "", link: "", tags: [] });
     setTags([]);
-    window.location.reload();
+    setRefreshKey((value) => value + 1);
   };
   const deleteContent = (id: string) => {
     if (!token) {
@@ -140,7 +140,7 @@ const Dashboard = () => {
       })
       .then((res) => console.log(res))
       .catch((res) => console.log(res));
-    window.location.reload();
+    setRefreshKey((value) => value + 1);
   };
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);

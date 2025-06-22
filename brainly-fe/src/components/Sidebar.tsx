@@ -4,6 +4,9 @@ import { LuLayoutGrid, LuBrain } from "react-icons/lu";
 import { FaYoutube, FaTwitter, FaUser } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
+import { refreshKeyState } from "@/store/atoms";
+const setRefreshKey = useSetRecoilState(refreshKeyState);
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -15,17 +18,17 @@ const Sidebar = () => {
 
   const onclickhandler2 = () => {
     navigate("/user/tweets");
-    window.location.reload();
+    setRefreshKey((value) => value + 1);
   };
 
   const onclickhandler3 = () => {
     navigate("/user");
-    window.location.reload();
+    setRefreshKey((value) => value + 1);
   };
 
   const onclickhandler4 = () => {
     navigate("/user/profile");
-    window.location.reload();
+    setRefreshKey((value) => value + 1);
   };
 
   return (

@@ -114,12 +114,11 @@ const Navbar = () => {
       }
     }
   };
-  const submithandler = async (onsuccess?: any) => {
+  const submithandler = async () => {
     try {
       const newtags = [...tags, tagValue.trim()];
       const payload = { ...inputValue, tags: newtags };
 
-      // 👇 Wait for the request to complete
       const response = await axios.post(`${API_BASE}/content`, payload, {
         headers: { Authorization: token },
       });

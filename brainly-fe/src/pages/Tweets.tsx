@@ -24,7 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRecoilState } from "recoil";
-import { inputValueState, tagsState } from "@/store/atoms";
+import { inputValueState, refreshKeyState, tagsState } from "@/store/atoms";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -46,6 +46,7 @@ const Tweets = () => {
   const [inputValue, setInputValue] = useRecoilState(inputValueState);
   const [tags, setTags] = useRecoilState(tagsState);
   const [tagValue, setTagValue] = useState("");
+  const [refreshkey, setRefreshKey] = useRecoilState(refreshKeyState);
   const copyHandler = (link: string, id: string) => {
     setCopyId(id);
     navigator.clipboard.writeText(link);
@@ -64,7 +65,7 @@ const Tweets = () => {
       })
       .then((res) => console.log(res))
       .catch((res) => console.log(res));
-    window.location.reload();
+    setRefreshKey((value) => value + 1);
   };
   const editValuesHandler = (id: string) => {
     if (!token) {
@@ -95,7 +96,7 @@ const Tweets = () => {
         setData([...res.data.contents]);
       })
       .catch((res) => console.log(res));
-  }, [token]);
+  }, [refreshkey]);
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
     return date.toLocaleDateString("en-GB");
@@ -103,24 +104,27 @@ const Tweets = () => {
   if (!token) {
     return;
   }
-  const submithandler = (id: string) => {
-    if (tagValue) {
-      const newtags = [...tags, tagValue.trim()];
-      setTags(newtags);
-      setInputValue({ ...inputValue, tags: newtags });
-      setTagValue("");
-    }
-    axios
-      .put(
+  const submithandler = async (id: string) => {
+    try {
+      if (tagValue) {
+        const newtags = [...tags, tagValue.trim()];
+        setTags(newtags);
+        setInputValue({ ...inputValue, tags: newtags });
+        setTagValue("");
+      }
+
+      await axios.put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },
-        { headers: { token: JSON.parse(token) } }
-      )
-      .then((res) => console.log(res))
-      .catch((res) => console.log(res));
-    setInputValue({ title: "", link: "", tags: [] });
-    setTags([]);
-    window.location.reload();
+        { headers: { Authorization: token } }
+      );
+
+      setInputValue({ title: "", link: "", tags: [] });
+      setTags([]);
+      setRefreshKey((value) => value + 1);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
   };
   const handleTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

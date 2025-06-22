@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z
   .object({
@@ -54,17 +55,22 @@ const formSchema = z
     message: "Confirm password must match newPassword",
     path: ["ConfirmPassword"],
   });
+type formValues = z.infer<typeof formSchema>;
 
 const Profile = () => {
   const API_BASE = import.meta.env.VITE_API_BASE;
   const rawToken = localStorage.getItem("token");
   const token = rawToken && rawToken != "null" ? JSON.parse(rawToken) : null;
-  const form = useForm();
+
   const [user, setUser] = useState<{
     username?: string;
     email?: string;
     posts?: string;
   }>({});
+
+  const form = useForm<formValues>({
+    resolver: zodResolver(formSchema),
+  });
 
   useEffect(() => {
     axios
@@ -77,7 +83,7 @@ const Profile = () => {
       .catch((res) => console.log(res));
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: formValues) => {
     if (!token) {
       return;
     }
