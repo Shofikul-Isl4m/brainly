@@ -27,6 +27,7 @@ import { useRecoilState } from "recoil";
 import { inputValueState, refreshKeyState, tagsState } from "@/store/atoms";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import TwitterEmbed from "@/components/TwitterEmbed";
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface dataInterface {
@@ -247,7 +248,7 @@ const Tweets = () => {
                 {twitter && (
                   <div className=" rounded-lg px-2">
                     <blockquote className="twitter-tweet">
-                      <a href={e.link.replace("x.com", "twitter.com")}></a>
+                      <TwitterEmbed url={e.link} />
                     </blockquote>
                   </div>
                 )}
