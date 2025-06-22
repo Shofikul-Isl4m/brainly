@@ -30,8 +30,10 @@ const Navbar = () => {
   const [copied, setCopied] = useState(false);
   const [sharedLink, setSharedLink] = useState("");
   const [sharable, setSharable] = useState(false);
-  const setRefreshKey = useSetRecoilState(refreshKeyState);
+
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const setRefreshKey = useSetRecoilState(refreshKeyState);
   const tokenRaw = localStorage.getItem("token");
   const token = tokenRaw ? JSON.parse(tokenRaw) : null;
 
@@ -128,7 +130,7 @@ const Navbar = () => {
       // Reset only AFTER success
       setInputValue({ title: "", link: "", tags: [] });
       setTags([]);
-      setRefreshKey((prev) => prev + 1);
+      setRefreshKey((value) => value + 1);
     } catch (error: any) {
       console.error("❌ Failed:", error.response?.data || error.message);
     }

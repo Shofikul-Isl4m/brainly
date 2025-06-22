@@ -55,11 +55,11 @@ const Youtube = () => {
     }, 2000);
     setCopied(true);
   };
-  const deleteContent = (id: string) => {
+  const deleteContent = async (id: string) => {
     if (!token) {
       return;
     }
-    axios
+    await axios
       .delete(`${API_BASE}/content/${id}`, {
         headers: { token: JSON.parse(token) },
       })
@@ -67,11 +67,11 @@ const Youtube = () => {
       .catch((res) => console.log(res));
     setRefreshKey((value) => value + 1);
   };
-  const editValuesHandler = (id: string) => {
+  const editValuesHandler = async (id: string) => {
     if (!token) {
       return;
     }
-    axios
+    await axios
       .get(`${API_BASE}/content/${id}`, {
         headers: { Authorization: token },
       })
@@ -104,14 +104,14 @@ const Youtube = () => {
   if (!token) {
     return;
   }
-  const submithandler = (id: string) => {
+  const submithandler = async (id: string) => {
     if (tagValue) {
       const newtags = [...tags, tagValue.trim()];
       setTags(newtags);
       setInputValue({ ...inputValue, tags: newtags });
       setTagValue("");
     }
-    axios
+    await axios
       .put(
         `${API_BASE}/content/${id}`,
         { ...inputValue },

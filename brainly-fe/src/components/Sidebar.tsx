@@ -6,10 +6,12 @@ import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { refreshKeyState } from "@/store/atoms";
-const setRefreshKey = useSetRecoilState(refreshKeyState);
+import { useState } from "react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const setRefreshKey = useSetRecoilState(refreshKeyState);
+  const [isOpen, setIsOpen] = useState(false);
 
   const onclickhandler = () => {
     navigate("/signup");
@@ -19,21 +21,36 @@ const Sidebar = () => {
   const onclickhandler2 = () => {
     navigate("/user/tweets");
     setRefreshKey((value) => value + 1);
+    setIsOpen(false);
   };
 
   const onclickhandler3 = () => {
     navigate("/user");
     setRefreshKey((value) => value + 1);
+    setIsOpen(false);
   };
 
   const onclickhandler4 = () => {
     navigate("/user/profile");
     setRefreshKey((value) => value + 1);
+    setIsOpen(false);
+  };
+  const onclickhandler1 = () => {
+    navigate("/user/youtube");
+    setRefreshKey((value) => value + 1);
+    setIsOpen(false);
   };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          setIsOpen(false);
+        }
+      }}
+    >
+      <SheetTrigger asChild onClick={() => setIsOpen(true)}>
         <Menu />
       </SheetTrigger>
       <SheetContent side="left">
@@ -49,7 +66,7 @@ const Sidebar = () => {
           Dashboard
         </h1>
         <h1
-          onClick={() => navigate("/user/videos")}
+          onClick={onclickhandler1}
           className="flex hover:bg-accent py-2 cursor-pointer"
         >
           <FaYoutube className=" mx-5 text-3xl" />

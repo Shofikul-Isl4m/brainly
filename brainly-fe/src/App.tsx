@@ -16,7 +16,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="*" element={<NoPage />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="videos" element={<Youtube />} />
+          <Route path="youtube" element={<Youtube />} />
           <Route path="tweets" element={<Tweets />} />
         </Route>
         <Route path="/" element={<Credentials />} />

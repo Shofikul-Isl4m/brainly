@@ -55,11 +55,11 @@ const Tweets = () => {
     }, 2000);
     setCopied(true);
   };
-  const deleteContent = (id: string) => {
+  const deleteContent = async (id: string) => {
     if (!token) {
       return;
     }
-    axios
+    await axios
       .delete(`${API_BASE}/content/${id}`, {
         headers: { Authorization: token },
       })
@@ -67,11 +67,11 @@ const Tweets = () => {
       .catch((res) => console.log(res));
     setRefreshKey((value) => value + 1);
   };
-  const editValuesHandler = (id: string) => {
+  const editValuesHandler = async (id: string) => {
     if (!token) {
       return;
     }
-    axios
+    await axios
       .get(`${API_BASE}/content/${id}`, {
         headers: { Authorization: token },
       })

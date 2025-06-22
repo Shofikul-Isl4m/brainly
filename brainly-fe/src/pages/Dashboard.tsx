@@ -128,11 +128,11 @@ const Dashboard = () => {
     setTags([]);
     setRefreshKey((value) => value + 1);
   };
-  const deleteContent = (id: string) => {
+  const deleteContent = async (id: string) => {
     if (!token) {
       return;
     }
-    axios
+    await axios
       .delete(`${API_BASE}/content/${id}`, {
         headers: {
           Authorization: token,
@@ -166,7 +166,7 @@ const Dashboard = () => {
 
         return (
           <Card
-            className=" md:w-96 w-full h-[480px] overflow-auto m-3"
+            className=" md:w-96 w-full h-[480px] overflow-auto m-3 ml-20"
             key={e._id}
           >
             <CardHeader>
@@ -274,7 +274,7 @@ const Dashboard = () => {
                 </div>
               )}
               {youtube && (
-                <div className="rounded-lg border">
+                <div className="rounded-lg ">
                   <iframe
                     src={nlink}
                     title="Youtube Video player"
