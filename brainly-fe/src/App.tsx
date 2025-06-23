@@ -22,6 +22,7 @@ function App() {
         <Route path="/" element={<Credentials />} />
         <Route path="/signup" element={<Credentials />} />
         <Route path="/share/:id" element={<SharedPage />} />
+        <Route path="youtube" element={<Youtube />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
