@@ -10,7 +10,23 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5174, // or any other available port
+    port: 5174,
+    host: true, // Allow external connections
   },
-  base: "./",
+  base: "/", // Crucial for Vercel deployments
+  build: {
+    outDir: "dist", // Explicit output directory
+    emptyOutDir: true, // Clean before building
+    sourcemap: true, // Helps with debugging
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name]-[hash][extname]",
+        chunkFileNames: "js/[name]-[hash].js",
+        entryFileNames: "js/[name]-[hash].js",
+      },
+    },
+  },
+  preview: {
+    port: 5175, // Different port for preview
+  },
 });
