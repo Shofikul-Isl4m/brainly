@@ -14,13 +14,9 @@
       "destination": "/index.html"
     }
   ],
-  "builds": [
-    {
-      "src": "vite.config.ts",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
     }
-  ]
+  }
 }
